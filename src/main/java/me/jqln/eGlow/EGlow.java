@@ -3,6 +3,7 @@ package me.jqln.eGlow;
 import me.jqln.eGlow.commands.GlowCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,55 +11,59 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public final class EGlow extends JavaPlugin implements Listener {
+    private static EGlow plugin;
+
     @Override
     public void onEnable() {
+        plugin = this;
+
+        // Write default config.yml file
+        saveDefaultConfig();
+
         // Register commands
         getCommand("glow").setExecutor(new GlowCommand());
 
-        new BukkitRunnable() {
-            // Define teams
-            final Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            Team lightTeam = scoreboard.getTeam("glow_LIGHT_RAINBOW");
-            Team darkTeam = scoreboard.getTeam("glow_DARK_RAINBOW");
+        // Get the effects section of config.yml
+        ConfigurationSection effects = getConfig().getConfigurationSection("effects");
 
-            int i = 0;
+        // Iterate through each effect
+        for (String effect : effects.getKeys(false)) {
+            int timer = effects.getConfigurationSection(effect).getInt("cycle-tick-speed");
 
-            // Define colors
-            final ChatColor[] lightColors = {
-                    ChatColor.RED,
-                    ChatColor.YELLOW,
-                    ChatColor.GREEN,
-                    ChatColor.AQUA,
-                    ChatColor.BLUE,
-                    ChatColor.LIGHT_PURPLE
-            };
-            final ChatColor[] darkColors = {
-                    ChatColor.DARK_RED,
-                    ChatColor.GOLD,
-                    ChatColor.DARK_GREEN,
-                    ChatColor.DARK_AQUA,
-                    ChatColor.DARK_BLUE,
-                    ChatColor.DARK_PURPLE
-            };
+            new BukkitRunnable() {
+                // Define teams
+                final Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+                Team team = scoreboard.getTeam("glow_" + effect.toUpperCase());
 
-            @Override
-            public void run() {
-                // Create teams if not created already
-                if (lightTeam == null) {
-                    lightTeam = scoreboard.registerNewTeam("glow_LIGHT_RAINBOW");
-                    lightTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                int i = 0;
+
+                // Define colors
+                final String[] colors = effects.getConfigurationSection(effect).getStringList("colors").toArray(new String[0]);
+
+                @Override
+                public void run() {
+                    // Create team if not already created
+                    if (team == null) {
+                        team = scoreboard.registerNewTeam("glow_" + effect.toUpperCase());
+                        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                    }
+
+                    // Validate and set color
+                    try {
+                        ChatColor color = ChatColor.valueOf(colors[i % colors.length]);
+                        team.setColor(color);
+                    } catch (IllegalArgumentException e) {
+                        Bukkit.getLogger().warning(colors[i % colors.length] + " color in " + effect + " effect is not a valid color!");
+                        this.cancel();
+                    }
+
+                    i++;
                 }
-                if (darkTeam == null) {
-                    darkTeam = scoreboard.registerNewTeam("glow_DARK_RAINBOW");
-                    darkTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-                }
+            }.runTaskTimer(this, 0, timer);
+        }
+    }
 
-                // Change colors
-                lightTeam.setColor(lightColors[i % lightColors.length]);
-                darkTeam.setColor(darkColors[i % darkColors.length]);
-
-                i++;
-            }
-        }.runTaskTimer(this, 0, 10); // Execute run() every 10 ticks (half second)
+    public static EGlow getInstance() {
+        return plugin;
     }
 }

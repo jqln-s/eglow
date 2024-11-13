@@ -10,3 +10,4 @@ out/
 *.jar
 *.log
 *.ctxt
+dependency-reduced-pom.xml

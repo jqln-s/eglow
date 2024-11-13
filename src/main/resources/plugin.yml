@@ -1,5 +1,5 @@
 name: eGlow
-version: '2.0'
+version: '2.1'
 main: me.jqln.eGlow.EGlow
 api-version: '1.21'
 commands:
@@ -41,7 +41,3 @@ permissions:
     description: Allows user to set their glow to dark gray
   eglow.color.black:
     description: Allows user to set their glow to black
-  eglow.effect.darkrainbow:
-    description: Allows user to set their glow to dark rainbow
-  eglow.effect.lightrainbow:
-    description: Allows user to set their glow to light rainbow

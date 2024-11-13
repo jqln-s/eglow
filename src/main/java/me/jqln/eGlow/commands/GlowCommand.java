@@ -1,10 +1,12 @@
 package me.jqln.eGlow.commands;
 
+import me.jqln.eGlow.EGlow;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -29,57 +31,31 @@ public class GlowCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (strings[0].equalsIgnoreCase("rainbow")) {
-                    if (p.hasPermission("eglow.effect.darkrainbow")) {
-                        // Find dark rainbow team
-                        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-                        Team team = scoreboard.getTeam("glow_DARK_RAINBOW");
+                ConfigurationSection effects = EGlow.getInstance().getConfig().getConfigurationSection("effects");
 
-                        // Add player to light rainbow team and enable their glow
-                        team.addEntry(p.getName());
-                        p.setGlowing(true);
+                for (String effect : effects.getKeys(false)) {
+                    if (strings[0].equalsIgnoreCase(effect)) {
+                        if (p.hasPermission(effects.getConfigurationSection(effect).getString("permission"))) {
+                            // Find team
+                            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+                            Team team = scoreboard.getTeam("glow_" + effect.toUpperCase());
 
-                        // Send appropriately colored confirmation message
-                        p.sendMessage(ChatColor.GREEN + "Changed your glow color to " +
-                                ChatColor.DARK_RED + "R" +
-                                ChatColor.GOLD + "a" +
-                                ChatColor.DARK_GREEN + "i" +
-                                ChatColor.DARK_AQUA + "n" +
-                                ChatColor.DARK_BLUE + "b" +
-                                ChatColor.DARK_PURPLE + "o" +
-                                ChatColor.DARK_RED + "w");
+                            // Add player to team and enable their glow
+                            team.addEntry(p.getName());
+                            p.setGlowing(true);
 
-                        return true;
-                    } else {
-                        p.sendMessage(ChatColor.RED + "You don't have permissions to do that!");
-                        return true;
-                    }
-                }
+                            // Send appropriately colored confirmation message
+                            String effectName = getColorName(effect);
+                            String[] colors = effects.getConfigurationSection(effect).getStringList("colors").toArray(new String[0]);
+                            String message = ChatColor.GREEN + "Changed your glow effect to " + ChatColor.BOLD;
+                            for (int i = 0; i < effectName.length(); i++) {
+                                ChatColor color = ChatColor.valueOf(colors[i % colors.length]);
+                                message += color + effectName.substring(i, i + 1);
+                            }
+                            p.sendMessage(message);
 
-                if (strings[0].equalsIgnoreCase("light_rainbow")) {
-                    if (p.hasPermission("eglow.effect.lightrainbow")) {
-                        // Find light rainbow team
-                        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-                        Team team = scoreboard.getTeam("glow_LIGHT_RAINBOW");
-
-                        // Add player to light rainbow team and enable their glow
-                        team.addEntry(p.getName());
-                        p.setGlowing(true);
-
-                        // Send appropriately colored confirmation message
-                        p.sendMessage(ChatColor.GREEN + "Changed your glow color to " +
-                                ChatColor.RED + "R" +
-                                ChatColor.YELLOW + "a" +
-                                ChatColor.GREEN + "i" +
-                                ChatColor.AQUA + "n" +
-                                ChatColor.BLUE + "b" +
-                                ChatColor.LIGHT_PURPLE + "o" +
-                                ChatColor.RED + "w");
-
-                        return true;
-                    } else {
-                        p.sendMessage(ChatColor.RED + "You don't have permissions to do that!");
-                        return true;
+                            return true;
+                        }
                     }
                 }
 
@@ -103,8 +79,8 @@ public class GlowCommand implements CommandExecutor {
                     addGlowColor(p, chatColor);
 
                     // Format color name and send confirmation message
-                    String colorName = getColorName(chatColor);
-                    p.sendMessage(ChatColor.GREEN + "Changed your glow color to " + chatColor + colorName);
+                    String colorName = getColorName(chatColor.name());
+                    p.sendMessage(ChatColor.GREEN + "Changed your glow color to " + ChatColor.BOLD + chatColor + colorName);
                 } else {
                     p.sendMessage(ChatColor.RED + "You don't have permissions to do that!");
                 }
@@ -113,9 +89,9 @@ public class GlowCommand implements CommandExecutor {
         return true;
     }
 
-    private static String getColorName(ChatColor chatColor) {
+    private static String getColorName(String color) {
         // Replace all underscores with spaces and capitalize all words
-        String colorName = chatColor.name().toLowerCase().replace("_", " ");
+        String colorName = color.toLowerCase().replace("_", " ");
         return Arrays.stream(colorName.split(" "))
                 .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
                 .collect(Collectors.joining(" "));

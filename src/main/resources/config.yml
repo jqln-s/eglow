@@ -1,0 +1,22 @@
+effects:
+  dark_rainbow:
+    colors:
+      - 'DARK_RED'
+      - 'GOLD'
+      - 'DARK_GREEN'
+      - 'DARK_AQUA'
+      - 'DARK_BLUE'
+      - 'DARK_PURPLE'
+    cycle-tick-speed: 20 # 20 ticks = 1 second
+    permission: eglow.effect.darkrainbow
+
+  light_rainbow:
+    colors:
+      - 'RED'
+      - 'YELLOW'
+      - 'GREEN'
+      - 'AQUA'
+      - 'BLUE'
+      - 'LIGHT_PURPLE'
+    cycle-tick-speed: 20 # 20 ticks = 1 second
+    permission: eglow.effect.lightrainbow
