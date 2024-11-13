@@ -1,0 +1,47 @@
+name: eGlow
+version: '2.0'
+main: me.jqln.eGlow.EGlow
+api-version: '1.21'
+commands:
+  glow:
+    description: Make yourself glow
+    usage: /<command> [color]
+    aliases:
+      - eglow
+permissions:
+  eglow.color.darkred:
+    description: Allows user to set their glow to dark red
+  eglow.color.red:
+    description: Allows user to set their glow to red
+  eglow.color.yellow:
+    description: Allows user to set their glow to yellow
+  eglow.color.gold:
+    description: Allows user to set their glow to gold
+  eglow.color.darkgreen:
+    description: Allows user to set their glow to dark green
+  eglow.color.green:
+    description: Allows user to set their glow to green
+  eglow.color.aqua:
+    description: Allows user to set their glow to aqua
+  eglow.color.darkaqua:
+    description: Allows user to set their glow to dark aqua
+  eglow.color.darkblue:
+    description: Allows user to set their glow to dark blue
+  eglow.color.blue:
+    description: Allows user to set their glow to blue
+  eglow.color.lightpurple:
+    description: Allows user to set their glow to light purple
+  eglow.color.darkpurple:
+    description: Allows user to set their glow to dark purple
+  eglow.color.white:
+    description: Allows user to set their glow to white
+  eglow.color.gray:
+    description: Allows user to set their glow to gray
+  eglow.color.darkgray:
+    description: Allows user to set their glow to dark gray
+  eglow.color.black:
+    description: Allows user to set their glow to black
+  eglow.effect.darkrainbow:
+    description: Allows user to set their glow to dark rainbow
+  eglow.effect.lightrainbow:
+    description: Allows user to set their glow to light rainbow
