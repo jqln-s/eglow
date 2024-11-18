@@ -1,7 +1,8 @@
 name: eGlow
-version: '2.1'
+version: '2.1.1'
 main: me.jqln.eGlow.EGlow
 api-version: '1.21'
+softdepend: ['PlaceholderAPI']
 commands:
   glow:
     description: Make yourself glow

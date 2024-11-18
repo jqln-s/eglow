@@ -1,6 +1,7 @@
 package me.jqln.eGlow.commands;
 
 import me.jqln.eGlow.EGlow;
+import me.jqln.eGlow.util.GlowManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,9 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 public class GlowCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -22,7 +20,7 @@ public class GlowCommand implements CommandExecutor {
                 // Disable glow or redirect player if no color provided
                 if (strings.length == 0) {
                     if (p.isGlowing()) {
-                        removeGlowColor(p);
+                        GlowManager.removeGlowColor(p);
                         p.sendMessage(ChatColor.GREEN + "Removed your glow color.");
                     } else {
                         p.sendMessage(ChatColor.RED + "Usage: /glow <color>");
@@ -45,7 +43,7 @@ public class GlowCommand implements CommandExecutor {
                             p.setGlowing(true);
 
                             // Send appropriately colored confirmation message
-                            String effectName = getColorName(effect);
+                            String effectName = GlowManager.getColorName(effect);
                             String[] colors = effects.getConfigurationSection(effect).getStringList("colors").toArray(new String[0]);
                             String message = ChatColor.GREEN + "Changed your glow effect to " + ChatColor.BOLD;
                             for (int i = 0; i < effectName.length(); i++) {
@@ -74,12 +72,12 @@ public class GlowCommand implements CommandExecutor {
                 if (p.hasPermission(permission)) {
                     // Remove old color and add new color
                     if (p.isGlowing()) {
-                        removeGlowColor(p);
+                        GlowManager.removeGlowColor(p);
                     }
-                    addGlowColor(p, chatColor);
+                    GlowManager.addGlowColor(p, chatColor);
 
                     // Format color name and send confirmation message
-                    String colorName = getColorName(chatColor.name());
+                    String colorName = GlowManager.getColorName(chatColor.name());
                     p.sendMessage(ChatColor.GREEN + "Changed your glow color to " + ChatColor.BOLD + chatColor + colorName);
                 } else {
                     p.sendMessage(ChatColor.RED + "You don't have permissions to do that!");
@@ -87,43 +85,5 @@ public class GlowCommand implements CommandExecutor {
             }
         }
         return true;
-    }
-
-    private static String getColorName(String color) {
-        // Replace all underscores with spaces and capitalize all words
-        String colorName = color.toLowerCase().replace("_", " ");
-        return Arrays.stream(colorName.split(" "))
-                .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
-                .collect(Collectors.joining(" "));
-    }
-
-    public static void addGlowColor(Player p, ChatColor color) {
-        // Find or create team
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        String teamName = "glow_" + color.name();
-        Team team = scoreboard.getTeam(teamName);
-        if (team == null) {
-            team = scoreboard.registerNewTeam(teamName);
-            team.setColor(color);
-            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-        }
-
-        // Add player to team and enable their glow
-        team.addEntry(p.getName());
-        p.setGlowing(true);
-    }
-
-    public static void removeGlowColor(Player p) {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-
-        // Remove player from all glow teams
-        for (Team team : scoreboard.getTeams()) {
-            if (team.hasEntry(p.getName()) && team.getName().startsWith("glow_")) {
-                team.removeEntry(p.getName());
-            }
-        }
-
-        // Disable player's glow
-        p.setGlowing(false);
     }
 }
