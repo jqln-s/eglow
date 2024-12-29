@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -30,6 +31,17 @@ public class GlowCommand implements CommandExecutor {
                 }
 
                 ConfigurationSection effects = EGlow.getInstance().getConfig().getConfigurationSection("effects");
+
+                // Reload the config file
+                if (strings[0].equalsIgnoreCase("reload")) {
+                    if (p.hasPermission("eglow.reload")) {
+                        EGlow.getInstance().reloadConfig();
+
+                        p.sendMessage(ChatColor.GREEN + "eGlow configuration file reloaded successfully.");
+
+                        return true;
+                    }
+                }
 
                 for (String effect : effects.getKeys(false)) {
                     if (strings[0].equalsIgnoreCase(effect)) {

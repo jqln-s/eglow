@@ -1,5 +1,5 @@
 name: eGlow
-version: '2.1.1'
+version: '2.2'
 main: me.jqln.eGlow.EGlow
 api-version: '1.21'
 softdepend: ['PlaceholderAPI']
@@ -42,3 +42,5 @@ permissions:
     description: Allows user to set their glow to dark gray
   eglow.color.black:
     description: Allows user to set their glow to black
+  eglow.reload:
+    description: Allows user to use /glow reload to reload the config
