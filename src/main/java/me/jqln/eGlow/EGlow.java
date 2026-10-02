@@ -1,6 +1,8 @@
 package me.jqln.eGlow;
 
 import me.jqln.eGlow.commands.GlowCommand;
+import me.jqln.eGlow.util.GlowTabCompletion;
+import me.jqln.eGlow.util.GuiListener;
 import me.jqln.eGlow.util.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,6 +33,10 @@ public final class EGlow extends JavaPlugin implements Listener {
 
         // Register commands
         getCommand("glow").setExecutor(new GlowCommand());
+        getCommand("glow").setTabCompleter(new GlowTabCompletion());
+
+        // Register listeners
+        getServer().getPluginManager().registerEvents(new GuiListener(), this);
 
         // Get the effects section of config.yml
         ConfigurationSection effects = getConfig().getConfigurationSection("effects");

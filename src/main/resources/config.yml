@@ -7,10 +7,12 @@ effects:
       - 'DARK_AQUA'
       - 'DARK_BLUE'
       - 'DARK_PURPLE'
+    gui-item: 'PLAYER_HEAD'
+    skull-url: 'http://textures.minecraft.net/texture/abf9c2b989f3d3ea1f88a39c6774a0b295ddaef4794cd3fe17b971937f2a4c6'
     cycle-tick-speed: 20 # 20 ticks = 1 second
     permission: eglow.effect.darkrainbow
 
-  light_rainbow:
+  rainbow:
     colors:
       - 'RED'
       - 'YELLOW'
@@ -18,5 +20,30 @@ effects:
       - 'AQUA'
       - 'BLUE'
       - 'LIGHT_PURPLE'
+    gui-item: 'PLAYER_HEAD'
+    skull-url: 'http://textures.minecraft.net/texture/447917193e9fb7cb968fba03a2e284a046121b2dc01541cacdba53a4f9bbf708'
     cycle-tick-speed: 20 # 20 ticks = 1 second
-    permission: eglow.effect.lightrainbow
+    permission: eglow.effect.rainbow
+
+gui:
+  empty-slot: 'LIGHT_GRAY_STAINED_GLASS_PANE'
+  slots:
+    10: 'RED'
+    11: 'DARK_RED'
+    12: 'GOLD'
+    13: 'YELLOW'
+    14: 'GREEN'
+    15: 'DARK_GREEN'
+    16: 'AQUA'
+    19: 'DARK_AQUA'
+    20: 'BLUE'
+    21: 'DARK_BLUE'
+    22: 'LIGHT_PURPLE'
+    23: 'DARK_PURPLE'
+    24: 'BLACK'
+    25: 'DARK_GRAY'
+    28: 'GRAY'
+    29: 'WHITE'
+    31: 'RESET'
+    33: 'RAINBOW'
+    34: 'DARK_RAINBOW'

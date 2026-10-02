@@ -6,7 +6,7 @@
 
     <groupId>me.jqln</groupId>
     <artifactId>eglow</artifactId>
-    <version>2.2</version>
+    <version>3.0</version>
     <packaging>jar</packaging>
 
     <name>eglow</name>
@@ -46,7 +46,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-                    <outputDirectory>/home/jackies/Server/plugins</outputDirectory>
+                    <outputDirectory>/Users/jackiesouth/Desktop/server/plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
