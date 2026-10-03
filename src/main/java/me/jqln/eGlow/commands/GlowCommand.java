@@ -17,6 +17,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
@@ -133,6 +136,59 @@ public class GlowCommand implements CommandExecutor {
                 if (strings[0].equalsIgnoreCase("reset")) {
                     GlowManager.removeGlowColor(p);
                     p.sendMessage(ChatColor.GREEN + "Reset your glow color!");
+                    return true;
+                }
+
+                if (strings[0].equalsIgnoreCase("reload")) {
+                    if (!p.hasPermission("eglow.reload")) {
+                        p.sendMessage(ChatColor.RED + "You don't have permissions to do that!");
+                        return true;
+                    }
+
+                    // Cancel scheduler and reload config
+                    EGlow.getGlowCycle().cancel();
+                    EGlow.getInstance().reloadConfig();
+
+                    // Get the effects section of config.yml
+                    ConfigurationSection effects = EGlow.getInstance().getConfig().getConfigurationSection("effects");
+
+                    // Iterate through each effect
+                    for (String effect : effects.getKeys(false)) {
+                        int timer = effects.getConfigurationSection(effect).getInt("cycle-tick-speed");
+
+                        EGlow.setGlowCycle(new BukkitRunnable() {
+                            // Define teams
+                            final Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+                            Team team = scoreboard.getTeam("glow_" + effect.toUpperCase());
+
+                            int i = 0;
+
+                            // Define colors
+                            final String[] colors = effects.getConfigurationSection(effect).getStringList("colors").toArray(new String[0]);
+
+                            @Override
+                            public void run() {
+                                // Create team if not already created
+                                if (team == null) {
+                                    team = scoreboard.registerNewTeam("glow_" + effect.toUpperCase());
+                                    team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                                }
+
+                                // Validate and set color
+                                try {
+                                    ChatColor color = ChatColor.valueOf(colors[i % colors.length]);
+                                    team.setColor(color);
+                                } catch (IllegalArgumentException e) {
+                                    Bukkit.getLogger().warning(colors[i % colors.length] + " color in " + effect + " effect is not a valid color!");
+                                    this.cancel();
+                                }
+
+                                i++;
+                            }
+                        }.runTaskTimer(EGlow.getInstance(), 0, timer));
+                    }
+
+                    p.sendMessage(ChatColor.GREEN + "Config reloaded successfully!");
                     return true;
                 }
 

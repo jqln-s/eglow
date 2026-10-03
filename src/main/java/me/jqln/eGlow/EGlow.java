@@ -11,11 +11,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public final class EGlow extends JavaPlugin implements Listener {
     private static EGlow plugin;
+    private static BukkitTask glowCycle;
 
     @Override
     public void onEnable() {
@@ -45,7 +47,7 @@ public final class EGlow extends JavaPlugin implements Listener {
         for (String effect : effects.getKeys(false)) {
             int timer = effects.getConfigurationSection(effect).getInt("cycle-tick-speed");
 
-            new BukkitRunnable() {
+            glowCycle = new BukkitRunnable() {
                 // Define teams
                 final Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
                 Team team = scoreboard.getTeam("glow_" + effect.toUpperCase());
@@ -81,6 +83,10 @@ public final class EGlow extends JavaPlugin implements Listener {
     public static EGlow getInstance() {
         return plugin;
     }
+
+    public static BukkitTask getGlowCycle() { return glowCycle; }
+
+    public static void setGlowCycle(BukkitTask newGlowCycle) { glowCycle = newGlowCycle; }
 
     public static ChatColor getColor(Player p) {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
